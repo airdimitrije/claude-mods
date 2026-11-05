@@ -1,0 +1,6 @@
+{
+  "name": "switchboard",
+  "version": "0.1.0",
+  "description": "/mods lists every mod on this machine and toggles it or its panes off",
+  "author": { "name": "Dimitrije Radusinovic" }
+}

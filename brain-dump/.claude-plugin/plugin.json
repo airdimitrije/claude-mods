@@ -1,0 +1,6 @@
+{
+  "name": "brain-dump",
+  "version": "0.1.0",
+  "description": "Catches a long messy prompt, asks a few questions about it, and sends it as the task, the why, the guardrails and what done looks like",
+  "author": { "name": "Dimitrije Radusinovic" }
+}

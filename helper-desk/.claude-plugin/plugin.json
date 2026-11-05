@@ -1,0 +1,6 @@
+{
+  "name": "helper-desk",
+  "version": "0.1.0",
+  "description": "A progress band above the prompt and a panel with one row per subagent: its colour, its progress and what it cost",
+  "author": { "name": "Dimitrije Radusinovic" }
+}

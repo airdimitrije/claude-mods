@@ -1,0 +1,6 @@
+{
+  "name": "chat-inventory",
+  "version": "0.1.0",
+  "description": "/inventory shows the goal, the task list, every connector and skill used, and the files touched in this chat",
+  "author": { "name": "Dimitrije Radusinovic" }
+}

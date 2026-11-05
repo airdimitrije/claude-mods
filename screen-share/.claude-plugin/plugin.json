@@ -1,0 +1,6 @@
+{
+  "name": "screen-share",
+  "version": "0.1.0",
+  "description": "/screen-share replaces emails, phone numbers, money amounts and words you name with grey bars, so the screen is safe to show",
+  "author": { "name": "Dimitrije Radusinovic" }
+}

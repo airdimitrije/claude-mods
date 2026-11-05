@@ -1,0 +1,6 @@
+{
+  "name": "reflect",
+  "version": "0.1.0",
+  "description": "Catches a hard standing rule in a prompt and asks where to save it: memory, CLAUDE.md, or the vault",
+  "author": { "name": "Dimitrije Radusinovic" }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "handoff",
+  "version": "0.1.0",
+  "description": "Writes tasks/handoff.md for a fresh chat: at 250k tokens, when the chat has gone cold, or on /handoff",
+  "author": { "name": "Dimitrije Radusinovic" }
+}

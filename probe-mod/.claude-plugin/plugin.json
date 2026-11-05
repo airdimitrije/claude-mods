@@ -1,0 +1,6 @@
+{
+  "name": "probe-mod",
+  "version": "0.1.0",
+  "description": "Infrastructure probe: confirms the mods hooks module loads on this surface",
+  "author": { "name": "Dimitrije Radusinovic" }
+}

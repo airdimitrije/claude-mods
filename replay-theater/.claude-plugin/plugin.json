@@ -1,0 +1,6 @@
+{
+  "name": "replay-theater",
+  "version": "0.1.0",
+  "description": "/replay steps through every change Claude made to a file in this chat and puts an earlier version back",
+  "author": { "name": "Dimitrije Radusinovic" }
+}

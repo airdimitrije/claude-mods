@@ -1,0 +1,6 @@
+{
+  "name": "cache-clock",
+  "version": "0.1.0",
+  "description": "Counts down to the moment this chat's prompt cache goes cold, and can keep it warm with one cheap touch",
+  "author": { "name": "Dimitrije Radusinovic" }
+}
