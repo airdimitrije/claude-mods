@@ -1,0 +1,6 @@
+{
+  "name": "trening",
+  "version": "0.1.0",
+  "description": "Watches an ML training log: loss, step, ETA and GPU in the status line, and a phone push when training finishes, crashes or stalls",
+  "author": { "name": "Dimitrije Radusinovic" }
+}

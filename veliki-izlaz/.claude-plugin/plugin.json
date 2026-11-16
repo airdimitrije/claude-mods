@@ -1,0 +1,6 @@
+{
+  "name": "veliki-izlaz",
+  "version": "0.1.0",
+  "description": "Warns when a tool's output in the main thread passes ~15k tokens: a toast for the person and a nudge for the model to delegate such work to a subagent",
+  "author": { "name": "Dimitrije Radusinovic" }
+}

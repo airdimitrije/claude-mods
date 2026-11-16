@@ -1,0 +1,6 @@
+{
+  "name": "ps-straza",
+  "version": "0.1.0",
+  "description": "Shell guard: refuses disk-wiping commands outright and asks before force-push, hard reset, DROP, reboot, HKLM edits and production deploys",
+  "author": { "name": "Dimitrije Radusinovic" }
+}

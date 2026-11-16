@@ -1,0 +1,94 @@
+{
+  "name": "claude-mods",
+  "description": "Claude Code mods: session board, shell guard, handoff with new session, large-output warning, and more",
+  "owner": {
+    "name": "Dimitrije Radusinovic"
+  },
+  "plugins": [
+    {
+      "name": "brain-dump",
+      "source": "./brain-dump",
+      "description": "Catches a long messy prompt, asks a few questions about it, and sends it as the task, the why, the guardrails and what done looks like"
+    },
+    {
+      "name": "cache-clock",
+      "source": "./cache-clock",
+      "description": "Counts down to the moment this chat's prompt cache goes cold, and can keep it warm with one cheap touch"
+    },
+    {
+      "name": "chat-inventory",
+      "source": "./chat-inventory",
+      "description": "/inventory shows the goal, the task list, every connector and skill used, and the files touched in this chat"
+    },
+    {
+      "name": "dokument",
+      "source": "./dokument",
+      "description": "Fills a template from sabloni/ ({{field}} placeholders) into a new dated file; never overwrites, never writes with a field missing"
+    },
+    {
+      "name": "handoff",
+      "source": "./handoff",
+      "description": "Writes tasks/handoff.md for a fresh chat (at 110k tokens, when the chat goes cold, or on /handoff) and offers a new session that starts with it as context"
+    },
+    {
+      "name": "helper-desk",
+      "source": "./helper-desk",
+      "description": "A progress band above the prompt and a panel with one row per subagent: its colour, its progress and what it cost"
+    },
+    {
+      "name": "n8n",
+      "source": "./n8n",
+      "description": "Read-only view of the local n8n: workflows, failed executions and why they failed, as tools for Claude and a /n8n summary"
+    },
+    {
+      "name": "novi-klijent",
+      "source": "./novi-klijent",
+      "description": "Sets up a new client app step by step (GitHub repo, Vercel, Neon, dimi-cli registry); each step shows its command and runs only after an explicit da"
+    },
+    {
+      "name": "objave",
+      "source": "./objave",
+      "description": "Social media posting schedule in objave.json, with what is due today in the status line; never posts anything itself"
+    },
+    {
+      "name": "ps-straza",
+      "source": "./ps-straza",
+      "description": "Shell guard: refuses disk-wiping commands outright and asks before force-push, hard reset, DROP, reboot, HKLM edits and production deploys"
+    },
+    {
+      "name": "reflect",
+      "source": "./reflect",
+      "description": "Catches a hard standing rule in a prompt and asks where to save it: memory, CLAUDE.md, or the vault"
+    },
+    {
+      "name": "replay-theater",
+      "source": "./replay-theater",
+      "description": "/replay steps through every change Claude made to a file in this chat and puts an earlier version back"
+    },
+    {
+      "name": "screen-share",
+      "source": "./screen-share",
+      "description": "/screen-share replaces emails, phone numbers, money amounts and words you name with grey bars, so the screen is safe to show"
+    },
+    {
+      "name": "switchboard",
+      "source": "./switchboard",
+      "description": "/mods lists every mod on this machine and toggles it or its panes off"
+    },
+    {
+      "name": "tabla",
+      "source": "./tabla",
+      "description": "One pane for every open Claude session (project, state, context) and a phone push when a long turn ends or a session asks for permission"
+    },
+    {
+      "name": "trening",
+      "source": "./trening",
+      "description": "Watches an ML training log: loss, step, ETA and GPU in the status line, and a phone push when training finishes, crashes or stalls"
+    },
+    {
+      "name": "veliki-izlaz",
+      "source": "./veliki-izlaz",
+      "description": "Warns when a tool's output in the main thread passes ~15k tokens: a toast for the person and a nudge for the model to delegate such work to a subagent"
+    }
+  ]
+}

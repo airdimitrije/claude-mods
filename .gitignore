@@ -1,0 +1,6 @@
+.replay/
+/tasks/handoff.md
+/tasks/.handoff-pending
+*/tasks/
+.claude-plugin/types/
+node_modules/

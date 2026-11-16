@@ -1,0 +1,6 @@
+{
+  "name": "objave",
+  "version": "0.1.0",
+  "description": "Social media posting schedule in objave.json, with what is due today in the status line; never posts anything itself",
+  "author": { "name": "Dimitrije Radusinovic" }
+}

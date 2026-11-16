@@ -1,0 +1,6 @@
+{
+  "name": "dokument",
+  "version": "0.1.0",
+  "description": "Fills a template from sabloni/ ({{field}} placeholders) into a new dated file; never overwrites, never writes with a field missing",
+  "author": { "name": "Dimitrije Radusinovic" }
+}

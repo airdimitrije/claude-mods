@@ -1,0 +1,6 @@
+{
+  "name": "novi-klijent",
+  "version": "0.1.0",
+  "description": "Sets up a new client app step by step (GitHub repo, Vercel, Neon, dimi-cli registry); each step shows its command and runs only after an explicit da",
+  "author": { "name": "Dimitrije Radusinovic" }
+}

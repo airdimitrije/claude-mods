@@ -1,0 +1,1 @@
+{ "description": "Large tool output warning", "modules": ["./register.ts"] }

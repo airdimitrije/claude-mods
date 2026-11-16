@@ -1,0 +1,1 @@
+{ "description": "Shell guard for PowerShell and Bash", "modules": ["./register.ts"] }

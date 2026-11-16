@@ -1,0 +1,6 @@
+{
+  "name": "n8n",
+  "version": "0.1.0",
+  "description": "Read-only view of the local n8n: workflows, failed executions and why they failed, as tools for Claude and a /n8n summary",
+  "author": { "name": "Dimitrije Radusinovic" }
+}

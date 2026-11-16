@@ -1,6 +1,9 @@
 {
   "name": "handoff",
-  "version": "0.1.0",
-  "description": "Writes tasks/handoff.md for a fresh chat: at 250k tokens, when the chat has gone cold, or on /handoff",
-  "author": { "name": "Dimitrije Radusinovic" }
+  "version": "0.2.0",
+  "description": "Writes tasks/handoff.md for a fresh chat (at 110k tokens, when the chat goes cold, or on /handoff) and offers a new session that starts with it as context",
+  "author": {
+    "name": "Dimitrije Radusinovic"
+  },
+  "types": "./types/index.d.ts"
 }

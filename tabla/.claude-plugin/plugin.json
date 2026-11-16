@@ -1,0 +1,7 @@
+{
+  "name": "tabla",
+  "version": "0.1.0",
+  "description": "One pane for every open Claude session (project, state, context) and a phone push when a long turn ends or a session asks for permission",
+  "author": { "name": "Dimitrije Radusinovic" },
+  "types": "./types/index.d.ts"
+}
