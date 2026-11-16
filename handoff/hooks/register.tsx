@@ -91,13 +91,6 @@ async function gather($: any) {
   return { tasks, messages, files: [...files], tools: [...tools], skills: [...skills] }
 }
 
-function transcriptText(messages: any[]) {
-  return messages
-    .map(message => (message.role === 'user' ? 'User: ' : 'Claude: ') + message.text)
-    .join('\n\n')
-    .slice(-180_000)
-}
-
 async function cwd($: any): Promise<string> {
   try {
     const here = await $.session.cwd()
@@ -107,29 +100,36 @@ async function cwd($: any): Promise<string> {
   }
 }
 
-async function doHandoff($: any, reason: string) {
+// Why the last attempt wrote nothing, so the person is told instead of "see the log"
+let lastFailure = ''
+
+// Resolves true when tasks/handoff.md is fresh: just written, or written
+// within MIN_GAP_MS
+async function doHandoff($: any, reason: string): Promise<boolean> {
   clearTimer()
   const now = await $.clock.now()
-  if (now - lastWriteAt < MIN_GAP_MS) return
+  if (lastPath !== '' && now - lastWriteAt < MIN_GAP_MS) return true
   const picture = await gather($)
+  // The fork already carries the whole chat; only the facts it can't see go here
   const facts =
     'Task list:\n' +
     picture.tasks.map(task => '- [' + task.status + '] ' + task.subject).join('\n') +
     '\n\nTools used: ' + picture.tools.join(', ') +
     '\nSkills used: ' + (picture.skills.join(', ') || '(none)') +
-    '\nFiles touched: ' + picture.files.join(', ') +
-    '\n\nTranscript:\n' + transcriptText(picture.messages)
+    '\nFiles touched: ' + picture.files.join(', ')
 
   let note = ''
   try {
     const answer = await $.model.fork({ prompt: PROMPT + '\n\n' + facts })
-    note = answer.isAnswered ? answer.text.trim() : ''
-  } catch {
-    note = ''
+    if (answer.isAnswered) note = answer.text.trim()
+    else lastFailure = 'model nije odgovorio (' + answer.reason + (answer.status ? ' ' + answer.status : '') + ')'
+  } catch (err) {
+    lastFailure = 'model odbio zahtjev: ' + String((err as Error)?.message ?? err)
   }
   if (note === '') {
-    $.ui.log('handoff: the model did not answer, so tasks/handoff.md was not written')
-    return
+    if (lastFailure === '') lastFailure = 'model je vratio prazan tekst'
+    $.ui.log('handoff: tasks/handoff.md not written: ' + lastFailure)
+    return false
   }
 
   const path = (await cwd($)) + '/tasks/handoff.md'
@@ -137,17 +137,20 @@ async function doHandoff($: any, reason: string) {
     await $.fs.write(path, note + '\n')
     lastWriteAt = now
     lastPath = path
+    lastFailure = ''
     $.ui.toast('Wrote ' + path + ' (' + reason + ')')
+    return true
   } catch (err) {
-    $.ui.log('handoff: could not write ' + path + ': ' + String((err as Error)?.message ?? err))
+    lastFailure = 'ne mogu da upišem ' + path + ': ' + String((err as Error)?.message ?? err)
+    $.ui.log('handoff: ' + lastFailure)
+    return false
   }
 }
 
 // "Nova sesija": the handoff, the marker the next session looks for, and a new
 // terminal tab in the same folder. Returns what to tell the person.
 export async function startFresh($: any): Promise<string> {
-  await doHandoff($, 'nova sesija')
-  if (lastPath === '') return 'Handoff nije upisan, nova sesija nije otvorena — vidi debug log.'
+  if (!(await doHandoff($, 'nova sesija'))) return 'Handoff nije upisan, nova sesija nije otvorena: ' + lastFailure
   const here = await cwd($)
   const project = here.replace(/[\\/]+$/, '').split(/[\\/]/).pop() || 'claude'
   const pending = { at: await $.clock.now(), from: await $.session.id() }
@@ -157,12 +160,20 @@ export async function startFresh($: any): Promise<string> {
   await $.store.set(pendingKey(here), pending)
   await update($, offer, () => null)
   try {
+    // `start` opens a window of its own from any console; `wt -w 0` only lands
+    // next to this session when it runs inside Windows Terminal. cmd re-parses
+    // its line, so nothing from the folder's name goes on it: the folder is the
+    // spawn's cwd, which `start` hands on. The title has a space, so it is
+    // always quoted and `start` never takes it for the program.
     const r = await $.process.run(
-      ['wt.exe', '-w', '0', 'new-tab', '-d', here, '--title', `${project} (nastavak)`, 'cmd', '/k', 'claude'],
-      { timeoutMs: 15_000 },
+      ['cmd.exe', '/c', 'start', 'claude (nastavak)', 'cmd', '/k', 'claude'],
+      { cwd: here, timeoutMs: 15_000 },
     )
-    if (r.exitCode === 0) return `Nova sesija otvorena u novom tabu (${project}). Prvi prompt tamo dobija handoff kao kontekst.`
-  } catch {}
+    if (r.exitCode === 0) return `Nova sesija otvorena u novom prozoru (${project}). Prvi prompt tamo dobija handoff kao kontekst.`
+    $.ui.log('handoff: start exited ' + r.exitCode + ': ' + String(r.stderr ?? '').trim())
+  } catch (err) {
+    $.ui.log('handoff: start failed: ' + String((err as Error)?.message ?? err))
+  }
   return `Handoff je upisan. Terminal nije otvoren: pokreni \`claude\` u ${here} u narednih 15 min i prvi prompt dobija handoff.`
 }
 
@@ -227,9 +238,8 @@ export const register: Register = on => {
   on('command.run', { command: 'handoff' }, async ($, e) => {
     if (isOff) return { text: 'handoff is turned off in /mods.' }
     if (String(e.args ?? '').trim().toLowerCase() === 'nova') return { text: await startFresh($) }
-    await doHandoff($, 'you asked for it')
-    return lastPath === ''
-      ? { text: 'Could not write a handoff — see the debug log.' }
+    return !(await doHandoff($, 'you asked for it'))
+      ? { text: 'Could not write a handoff: ' + lastFailure }
       : { text: 'Wrote ' + lastPath + '. /clear will bring it back automatically.' }
   })
 
@@ -243,7 +253,10 @@ export const register: Register = on => {
         <Button
           key="fresh"
           label="Nova sesija"
-          onPress={async () => $.ui.toast(await startFresh($))}
+          onPress={async () => {
+            $.ui.toast('Pišem handoff za novu sesiju… (traje do minut)')
+            $.ui.toast(await startFresh($))
+          }}
         />
         <Text> </Text>
         <Button

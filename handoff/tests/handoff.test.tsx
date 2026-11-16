@@ -12,7 +12,7 @@ const BAND = {
 
 const norm = (p: string) => p.replace(/^[A-Za-z]:/, '').replace(/\\/g, '/')
 
-function engine(on: any, opts: { files: Map<string, string>; runs: string[][]; id: string; tokens: number[]; now: number[]; store?: [string, unknown][] }) {
+function engine(on: any, opts: { files: Map<string, string>; runs: string[][]; id: string; tokens: number[]; now: number[]; store?: [string, unknown][]; fork?: unknown }) {
   const store = new Map<string, unknown>(opts.store ?? [])
   on('store.get', (_: any, e: any) => ({ value: store.get(e.key) }))
   on('store.set', (_: any, e: any) => { store.set(e.key, e.value); return { value: undefined } })
@@ -29,7 +29,7 @@ function engine(on: any, opts: { files: Map<string, string>; runs: string[][]; i
   on('session.cwd', () => ({ value: CWD }))
   on('session.usage', () => ({ value: { context: { tokens: opts.tokens[0], percent: 50 } } }))
   on('session.messages', () => ({ value: [{ role: 'user', text: 'popravi login' }] }))
-  on('model.fork', () => ({ value: { isAnswered: true, text: NOTE, usage: {} } }))
+  on('model.fork', () => ({ value: opts.fork ?? { isAnswered: true, text: NOTE, usage: {} } }))
   on('tool.call', () => ({ result: { tasks: [] } }))
   on('process.run', (_: any, e: any) => { opts.runs.push([...e.argv]); return { value: { exitCode: 0, stdout: '', stderr: '' } } })
   on('fs.write', (_: any, e: any) => { opts.files.set(norm(e.path), e.text); return { value: undefined } })
@@ -78,8 +78,9 @@ test('past 110k the band offers a new session; "Ne sad" waits for 30k more', asy
   await ui.press({ key: 'fresh' })
   expect(opts.files.get(`${CWD}/tasks/handoff.md`)).toMatch(/^Zadatak/)
   expect(JSON.parse(opts.files.get(`${CWD}/tasks/.handoff-pending`)!)).toEqual({ at: 1_000_000, from: 's1' })
-  expect(opts.runs.at(-1)?.slice(0, 4)).toEqual(['wt.exe', '-w', '0', 'new-tab'])
+  expect(opts.runs.at(-1)?.slice(0, 3)).toEqual(['cmd.exe', '/c', 'start'])
   expect(opts.runs.at(-1)?.slice(-3)).toEqual(['cmd', '/k', 'claude'])
+  expect(opts.runs.at(-1)?.join(' ')).not.toContain(CWD) // no path on cmd's line
   expect(await texts(ui)).not.toMatch(/Kontekst/)
   await ui.unmount()
 
@@ -102,6 +103,16 @@ test('a new session gets the handoff on its first prompt, once; stale markers ar
 
   const second = await $.prompt.submit({ text: 'još' } as any)
   expect(second.context ?? []).toEqual([])
+})
+
+test('when the model does not answer, /handoff nova says why and opens nothing', async ($, on) => {
+  const opts = { files: new Map<string, string>(), runs: [] as string[][], id: 's5', tokens: [5_000], now: [3_000_000], fork: { isAnswered: false, reason: 'api-error', status: 529 } }
+  engine(on, opts)
+  await $.session.start({ cwd: CWD, surface: 'terminal', isInteractive: true } as any)
+  const r = await $.command.run({ command: 'handoff', args: 'nova' } as any)
+  expect(r.text).toMatch(/nije upisan[\s\S]*api-error 529/)
+  expect(opts.runs).toEqual([])
+  expect(opts.files.get(`${CWD}/tasks/.handoff-pending`)).toBeUndefined()
 })
 
 test('a marker older than 15 minutes is left alone', async ($, on) => {
